@@ -1,0 +1,83 @@
+package com.example.studentcoursemanagement.controller;
+
+import com.example.studentcoursemanagement.model.Student;
+import com.example.studentcoursemanagement.repository.CourseRepository;
+import com.example.studentcoursemanagement.service.StudentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Controller
+public class StudentController {
+
+    @Autowired
+    private CourseRepository courseRepository;
+    @Autowired
+    private StudentService service;
+
+
+    // READ (list students)
+    @GetMapping("/")
+    public String listStudents(Model model) {
+        List<Student> students = service.getStudentsWithCourses();
+        model.addAttribute("students", students);
+        return "list";
+    }
+
+    // SHOW ADD FORM
+    @GetMapping("/add")
+    public String showAddForm(Model model) {
+        model.addAttribute("student", new Student());
+        model.addAttribute("courses", courseRepository.findAll());
+        return "add";
+    }
+
+    // SAVE (Create + Update)
+    @PostMapping("/save")
+    public String saveStudent(@ModelAttribute Student student,
+                              @RequestParam(required = false) List<Long> courseIds) {
+
+        // 👉 NEW STUDENT
+        if (student.getId() == null) {
+
+            if (courseIds != null) {
+                student.setCourses(courseRepository.findAllById(courseIds));
+            }
+
+            service.save(student);
+
+        } else {
+            // 👉 UPDATE STUDENT
+            Student existing = service.getById(student.getId());
+
+            existing.setName(student.getName());
+            existing.setEmail(student.getEmail());
+
+            if (courseIds == null) {
+                existing.getCourses().clear();
+            } else {
+                existing.setCourses(courseRepository.findAllById(courseIds));
+            }
+
+            service.save(existing);
+        }
+
+        return "redirect:/";
+    }
+
+    // EDIT
+    @GetMapping("/edit/{id}")
+    public String editStudent(@PathVariable Long id, Model model) {
+        Student student = service.getById(id);
+
+        model.addAttribute("student", student);
+        model.addAttribute("courses", courseRepository.findAll());
+
+        return "update";
+    }
+}
