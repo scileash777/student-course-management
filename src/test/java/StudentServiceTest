@@ -1,0 +1,28 @@
+package com.example.studentcoursemanagement;
+
+import com.example.studentcoursemanagement.model.Student;
+import com.example.studentcoursemanagement.service.StudentService;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest
+class StudentServiceTest {
+
+    @Autowired
+    private StudentService service;
+
+    @Test
+    void testServiceSave() {
+        Student s = new Student();
+        s.setName("ServiceUser");
+        s.setEmail("service@gmail.com");
+
+        Student saved = service.save(s);
+
+        assertNotNull(saved.getId());
+    }
+}
