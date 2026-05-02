@@ -1,0 +1,41 @@
+package com.example.studentcoursemanagement;
+
+import com.example.studentcoursemanagement.model.Student;
+import com.example.studentcoursemanagement.repository.StudentRepository;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest
+class StudentRepositoryTest {
+
+    @Autowired
+    private StudentRepository repository;
+
+    @Test
+    void testSaveAndFindStudent() {
+
+        // CREATE
+        Student student = new Student();
+        student.setName("TestUser");
+        student.setEmail("test@gmail.com");
+
+        Student saved = repository.save(student);
+
+        // ASSERT SAVE
+        assertNotNull(saved.getId());
+
+        // READ
+        Optional<Student> found = repository.findById(saved.getId());
+
+        // ASSERT READ
+        assertTrue(found.isPresent());
+        assertEquals("TestUser", found.get().getName());
+        assertEquals("test@gmail.com", found.get().getEmail());
+    }
+}
