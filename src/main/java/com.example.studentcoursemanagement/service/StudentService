@@ -1,0 +1,31 @@
+package com.example.studentcoursemanagement.service;
+
+import com.example.studentcoursemanagement.model.Student;
+import com.example.studentcoursemanagement.repository.StudentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class StudentService {
+
+    @Autowired
+    private StudentRepository repository;
+
+    public List<Student> getStudentsWithCourses() {
+        return repository.findStudentsWithCourses();
+    }
+
+    public Student save(Student student) {
+        try {
+            return repository.save(student);
+        } catch (Exception e) {
+            throw new RuntimeException("Error saving student: " + e.getMessage());
+        }
+    }
+
+    public Student getById(Long id) {
+        return repository.findById(id).orElse(null);
+    }
+}
